@@ -18,6 +18,8 @@ export const ChatContainer = () => {
     setMessages(messages.filter(m => m.id != msgId))
   }
 
+  const errorMessage = typeof error === 'object' ? error.message : 'Ops! Alguma coisa deu errado!';
+
   return (
     <section className={styles.container}>
       <ChatHeader />
@@ -44,7 +46,7 @@ export const ChatContainer = () => {
           <RetryButton onClick={reload} />
         </div>  
       )}
-      {error && <p>Ops! Alguma coisa deu errado!</p>}
+      {error && <p>{errorMessage}</p>}
       <ChatForm 
         input={input}
         handleInputChange={handleInputChange}

@@ -3,7 +3,21 @@ import { Ratelimit } from '@upstash/ratelimit';
 import { kv } from '@vercel/kv';
 import { convertToCoreMessages, streamText } from 'ai';
 
+const ratelimit = new Ratelimit({
+  redis: kv,
+  limiter: Ratelimit.fixedWindow(3, '60s'),
+});
+
 export async function POST(request) {
+  const ip = request.ip ?? 'ip';
+  const { success, remaining } = await ratelimit.limit(ip);
+
+  if (!success) {
+    return new Response('Limite de mensagens atingido!', { status: 429 })
+  }
+
+  return new Response('Limite de mensagens atingido!', { status: 429 })
+
   const { messages } = await request.json();
 
   // throw Error('Erro forçado');
@@ -18,11 +32,6 @@ export async function POST(request) {
     model: openai('gpt-4o'),
     messages: convertToCoreMessages(messages),
     system: systemPrompt,
-  });
-
-  const ratelimit = new Ratelimit({
-    redis: kv,
-    limiter: Ratelimit.fixedWindow(5, '30s'),
   });
 
   return result.toDataStreamResponse({
