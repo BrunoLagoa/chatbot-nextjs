@@ -12,15 +12,13 @@ export async function POST(request) {
   const ip = request.ip ?? 'ip';
   const { success, remaining } = await ratelimit.limit(ip);
 
+  // throw Error('Erro forçado');
+
   if (!success) {
     return new Response('Limite de mensagens atingido!', { status: 429 })
   }
 
-  return new Response('Limite de mensagens atingido!', { status: 429 })
-
   const { messages } = await request.json();
-
-  // throw Error('Erro forçado');
 
   const systemPrompt = `
   Você é um assistente pessoal divertido e gentil que fala sobre filmes.
